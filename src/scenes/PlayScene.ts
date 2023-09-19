@@ -1,9 +1,11 @@
 import Phaser from "phaser";
+import { SpriteWithDynamicBody } from "../types";
 
 class PlayScene extends Phaser.Scene {
 
-    player : Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-    // Utilidad de typescript
+    // Declaramos el dino
+    player : SpriteWithDynamicBody
+    // Utilidad de typescript retorna altura de juego en numero
     get gameHeight() {
         return this.game.config.height as number
     }
@@ -14,16 +16,28 @@ class PlayScene extends Phaser.Scene {
     create() {
         this.createPlayer()
         this.createEnviroment()
+        this.registerPlayerControl()
     }
 
     createPlayer() {
         // Creamos objeto físico porque tendrá gravedad y se le aplicarán colisiones
-        this.physics.add.sprite(0, this.gameHeight, "dino-idle").setOrigin(0, 1)
+        this.player = this.physics.add.sprite(0, this.gameHeight, "dino-idle").setOrigin(0, 1)
+        // Registramos el salto cuando pulsamos espacio
     }
     createEnviroment() {
         // 1 punto origen X, 2 punto origen Y, ancho del objeto, 4 alto
         // Añadimos el suelo, hasta que el dino cae el ancho serán 150px
         this.add.tileSprite(0, this.gameHeight, 150, 26, "ground").setOrigin(0, 1)
+    }
+
+    // Codificamos la tecla espacio para que salte
+    registerPlayerControl() {
+        const spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
+        spaceBar.on("down", () => {
+            // Para que salte debemos cambiar la velocidad y ponerla negativa
+            this.player.setVelocityY(-1000 )
+            
+        })
     }
 }
 
