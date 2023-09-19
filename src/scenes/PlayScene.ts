@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 
 class PlayScene extends Phaser.Scene {
+
+    player : Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     // Utilidad de typescript
     get gameHeight() {
         return this.game.config.height as number
