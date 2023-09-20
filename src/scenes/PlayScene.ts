@@ -22,7 +22,12 @@ class PlayScene extends Phaser.Scene {
     createPlayer() {
         // Creamos objeto físico porque tendrá gravedad y se le aplicarán colisiones
         this.player = this.physics.add.sprite(0, this.gameHeight, "dino-idle").setOrigin(0, 1)
-        // Registramos el salto cuando pulsamos espacio
+        // Hacemos que baje cuando estamos en el aire
+        this.player.setGravityY(5000)
+        // Añadimos fronteras de colisión
+        this.player.setCollideWorldBounds(true)
+        // Ajustamos tamaño para las colisiones
+        this.player.setSize(44, 92)
     }
     createEnviroment() {
         // 1 punto origen X, 2 punto origen Y, ancho del objeto, 4 alto
