@@ -3,14 +3,17 @@ import { SpriteWithDynamicBody } from "../types";
 import { Player } from "../entities/Player";
 
 class PlayScene extends Phaser.Scene {
-  // Declaramos el dino
-  player: Player;
-  // Disparador del juego
-  startTrigger: SpriteWithDynamicBody;
-  // Utilidad de typescript retorna altura de juego en numero
+  player: Player; // Declaramos el dino
+  startTrigger: SpriteWithDynamicBody; // Disparador del juego
+  ground: Phaser.GameObjects.TileSprite; // Suelo
+  // GET --> Utilidad de typescript retorna altura de juego en numero
   get gameHeight() {
     return this.game.config.height as number;
   }
+  get gameWidth() {
+    return this.game.config.width as number;
+  }
+
   constructor() {
     super("PlayScene");
   }
@@ -24,7 +27,7 @@ class PlayScene extends Phaser.Scene {
       .setAlpha(0)
       .setOrigin(0, 1);
 
-    // Cuando chocan entre los elementos
+    // Cuando chocan elementos
     this.physics.add.overlap(this.startTrigger, this.player, () => {
       // Comprobamos que la posición del el.invisible este arriba
       if (this.startTrigger.y == 10) {
@@ -33,8 +36,23 @@ class PlayScene extends Phaser.Scene {
         return;
       }
 
-      // Movemos el elemento, desplegamos el suelo y comienza la partida
-      this.startTrigger.body.reset(9999, 9999);
+      this.startTrigger.body.reset(9999, 9999); // Movemos el elemento
+
+      // Generamos el suelo
+      const rollOutevent = this.time.addEvent({
+        delay: 1000 / 60,
+        loop: true,
+        callback: () => {
+          this.player.setVelocityX(80); // Desplazamos el dino
+          this.ground.width += 17 * 2; // Generamos el suelo
+          // Cuando el suelo llegue al ancho de la escena
+          if (this.ground.width >= this.gameWidth) {
+            this.ground.width = this.gameWidth;
+            rollOutevent.remove(); // Detenemos el bucle
+            this.player.setVelocityX(0); // Paramos el dino
+          }
+        },
+      });
     });
   }
 
@@ -45,7 +63,13 @@ class PlayScene extends Phaser.Scene {
   createEnviroment() {
     // 1 punto origen X, 2 punto origen Y, ancho del objeto, 4 alto
     // Añadimos el suelo, hasta que el dino cae el ancho serán 150px
-    this.add.tileSprite(0, this.gameHeight, 150, 26, "ground").setOrigin(0, 1);
+    this.ground = this.add
+      .tileSprite(0, this.gameHeight, 150, 26, "ground")
+      .setOrigin(0, 1);
+  }
+
+  update(time: number, delta: number): void {
+    // Cuando el suelo llega al final se inicia
   }
 }
 
