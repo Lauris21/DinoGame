@@ -26,7 +26,15 @@ class PlayScene extends Phaser.Scene {
 
     // Cuando chocan entre los elementos
     this.physics.add.overlap(this.startTrigger, this.player, () => {
-      console.log("choque");
+      // Comprobamos que la posición del el.invisible este arriba
+      if (this.startTrigger.y == 10) {
+        // Si esta arriba y chocan bajará al suelo
+        this.startTrigger.body.reset(0, this.gameHeight);
+        return;
+      }
+
+      // Movemos el elemento, desplegamos el suelo y comienza la partida
+      this.startTrigger.body.reset(9999, 9999);
     });
   }
 
