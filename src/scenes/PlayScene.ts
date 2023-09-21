@@ -1,6 +1,7 @@
 import { SpriteWithDynamicBody } from "../types";
 import { Player } from "../entities/Player";
 import GameScene from "./GameScene";
+import { preloadConfig } from "..";
 
 class PlayScene extends GameScene {
   player: Player; // Declaramos el dino
@@ -84,7 +85,8 @@ class PlayScene extends GameScene {
 
   spawnObstacle() {
     // Generamos un número random entre 1 y 6 para escoger un cactus de los 6 que hay
-    const obstacleNum = Math.floor(Math.random() * 6) + 1;
+    const obstacleNum =
+      Math.floor(Math.random() * preloadConfig.cactusesCount) + 1;
     const distance = Phaser.Math.Between(600, 900);
 
     this.obstacles
