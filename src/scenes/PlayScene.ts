@@ -28,6 +28,10 @@ class PlayScene extends GameScene {
 
     this.obstacles = this.physics.add.group();
 
+    this.physics.add.collider(this.obstacles, this.player, () => {
+      this.physics.pause(); // Cuando chocan los cactus ocn el dino se para el juego
+      this.isGameRunning = false;
+    });
     // Cuando chocan elementos
     this.physics.add.overlap(this.startTrigger, this.player, () => {
       // Comprobamos que la posición del el.invisible este arriba
@@ -104,7 +108,8 @@ class PlayScene extends GameScene {
 
     this.obstacles
       .create(distance, this.gameHeight, `obstacle-${obstacleNum}`)
-      .setOrigin(0, 1);
+      .setOrigin(0, 1)
+      .setImmovable(); // Evitamos que se desplazcan al ser golpeados
   }
 }
 
