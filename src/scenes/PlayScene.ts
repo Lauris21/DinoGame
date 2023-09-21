@@ -6,6 +6,8 @@ class PlayScene extends GameScene {
   player: Player; // Declaramos el dino
   startTrigger: SpriteWithDynamicBody; // Disparador del juego
   ground: Phaser.GameObjects.TileSprite; // Suelo
+  obstacles: Phaser.Physics.Arcade.Group; // Creamos un grupo para almacenar los cactus
+
   spawnInterval: number = 1500; // Intervalo de generación para los obstáculos 1.5 s
   spawnTime: number = 0; // Tiempo de generación
 
@@ -21,6 +23,8 @@ class PlayScene extends GameScene {
       .sprite(0, 10, null)
       .setAlpha(0)
       .setOrigin(0, 1);
+
+    this.obstacles = this.physics.add.group();
 
     // Cuando chocan elementos
     this.physics.add.overlap(this.startTrigger, this.player, () => {
@@ -54,10 +58,22 @@ class PlayScene extends GameScene {
     });
   }
 
+  update(time: number, delta: number): void {
+    // Delta = tiempo entre fotogramas 16p/s
+    // Aumentamos tiempo de generación
+    this.spawnTime += delta;
+    // Si el tiempo de genración es mayor que el intervalo generamos el obstáculo
+    if (this.spawnInterval >= this.spawnInterval) {
+      this.spawnObstacle();
+      this.spawnTime = 0;
+    }
+  }
+
   createPlayer() {
     // Creamos objeto físico porque tendrá gravedad y se le aplicarán colisiones
     this.player = new Player(this, 0, this.gameHeight);
   }
+
   createEnviroment() {
     // 1 punto origen X, 2 punto origen Y, ancho del objeto, 4 alto
     // Añadimos el suelo, hasta que el dino cae el ancho serán 150px
@@ -66,14 +82,14 @@ class PlayScene extends GameScene {
       .setOrigin(0, 1);
   }
 
-  update(time: number, delta: number): void {
-    // Delta = tiempo entre fotogramas 16p/s
-    // Aumentamos tiempo de generación
-    this.spawnTime += delta;
-    // Si el tiempo de genración es mayor que el intervalo generamos el obstáculo
-    if (this.spawnInterval >= this.spawnInterval) {
-      this.spawnTime = 0;
-    }
+  spawnObstacle() {
+    // Generamos un número random entre 1 y 6 para escoger un cactus de los 6 que hay
+    const obstacleNum = Math.floor(Math.random() * 6) + 1;
+    const distance = Phaser.Math.Between(600, 900);
+
+    this.obstacles
+      .create(distance, this.gameHeight, `obstacle-${obstacleNum}`)
+      .setOrigin(0, 1);
   }
 }
 
