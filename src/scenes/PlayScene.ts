@@ -8,7 +8,7 @@ class PlayScene extends GameScene {
   startTrigger: SpriteWithDynamicBody; // Disparador del juego
   ground: Phaser.GameObjects.TileSprite; // Suelo
   obstacles: Phaser.Physics.Arcade.Group; // Creamos un grupo para almacenar los cactus
-  obstacleSpeed: number = 5; // Velocidad del cactus
+  gameSpeed: number = 5; // Velocidad del cactus
 
   spawnInterval: number = 1500; // Intervalo de generación para los obstáculos 1.5 s
   spawnTime: number = 0; // Tiempo de generación
@@ -72,13 +72,15 @@ class PlayScene extends GameScene {
       this.spawnTime = 0;
     }
 
-    Phaser.Actions.IncX(this.obstacles.getChildren(), -10, -this.obstacleSpeed); // Decrentamos posición X de todos los cactus
+    Phaser.Actions.IncX(this.obstacles.getChildren(), -10, -this.gameSpeed); // Decrentamos posición X de todos los cactus
 
     this.obstacles.getChildren().forEach((obstacle: SpriteWithDynamicBody) => {
       if (obstacle.getBounds().right < 0) {
         this.obstacles.remove(obstacle);
       }
     });
+
+    this.ground.tilePositionX += this.gameSpeed; // Reciclamos suelo y generamos movimiento
   }
 
   createPlayer() {
