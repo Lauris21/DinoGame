@@ -1,7 +1,10 @@
+import GameScene from "../scenes/GameScene";
+
 export class Player extends Phaser.Physics.Arcade.Sprite {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  constructor(scene: Phaser.Scene, x: number, y: number, key: string) {
-    super(scene, x, y, key);
+  scene: GameScene;
+  constructor(scene: GameScene, x: number, y: number) {
+    super(scene, x, y, "dino-run");
     // Lo registramos como un objeto de juego
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -37,6 +40,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (isSpaceJustDown && onFloor) {
       // Para que salte debemos cambiar la velocidad y ponerla negativa
       this.setVelocityY(-1600);
+    }
+
+    if (!this.scene.isGameRunning) {
+      return; // Si no ha empezado el juego no ejecutamos animación
+    }
+
+    // Verificamos la dirección del eje y del cuerpo del dino
+    if (this.body.deltaAbsY() > 0) {
+      // si es mayor que 0 esta saltando entonces pararemos la animación
+      this.anims.stop();
+      this.setTexture("dino-run", 0);
+    } else {
+      this.playRunAnimation();
     }
   }
 

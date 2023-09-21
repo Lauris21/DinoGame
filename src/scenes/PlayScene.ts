@@ -1,18 +1,13 @@
-import Phaser from "phaser";
 import { SpriteWithDynamicBody } from "../types";
 import { Player } from "../entities/Player";
+import GameScene from "./GameScene";
 
-class PlayScene extends Phaser.Scene {
+class PlayScene extends GameScene {
   player: Player; // Declaramos el dino
   startTrigger: SpriteWithDynamicBody; // Disparador del juego
   ground: Phaser.GameObjects.TileSprite; // Suelo
-  // GET --> Utilidad de typescript retorna altura de juego en numero
-  get gameHeight() {
-    return this.game.config.height as number;
-  }
-  get gameWidth() {
-    return this.game.config.width as number;
-  }
+  spawnInterval: number = 1500; // Intervalo de generación para los obstáculos 1.5 s
+  spawnTime: number = 0; // Tiempo de generación
 
   constructor() {
     super("PlayScene");
@@ -46,11 +41,13 @@ class PlayScene extends Phaser.Scene {
           this.player.playRunAnimation(); // LLamamos a la animación
           this.player.setVelocityX(80); // Desplazamos el dino
           this.ground.width += 17 * 2; // Generamos el suelo
+
           // Cuando el suelo llegue al ancho de la escena
           if (this.ground.width >= this.gameWidth) {
             this.ground.width = this.gameWidth;
             rollOutevent.remove(); // Detenemos el bucle
             this.player.setVelocityX(0); // Paramos el dino
+            this.isGameRunning = true; // Empezamos el juego
           }
         },
       });
@@ -59,7 +56,7 @@ class PlayScene extends Phaser.Scene {
 
   createPlayer() {
     // Creamos objeto físico porque tendrá gravedad y se le aplicarán colisiones
-    this.player = new Player(this, 0, this.gameHeight, "dino-run");
+    this.player = new Player(this, 0, this.gameHeight);
   }
   createEnviroment() {
     // 1 punto origen X, 2 punto origen Y, ancho del objeto, 4 alto
@@ -70,7 +67,13 @@ class PlayScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
-    // Cuando el suelo llega al final se inicia
+    // Delta = tiempo entre fotogramas 16p/s
+    // Aumentamos tiempo de generación
+    this.spawnTime += delta;
+    // Si el tiempo de genración es mayor que el intervalo generamos el obstáculo
+    if (this.spawnInterval >= this.spawnInterval) {
+      this.spawnTime = 0;
+    }
   }
 }
 

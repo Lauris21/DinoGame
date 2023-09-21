@@ -1,4 +1,3 @@
-
 import Phaser from "phaser";
 import PreloadScene from "./scenes/PreloadScene";
 import PlayScene from "./scenes/PlayScene";
@@ -12,12 +11,12 @@ const config: Phaser.Types.Core.GameConfig = {
   // fondo transparente
   transparent: true,
   physics: {
-    default: 'arcade',
+    default: "arcade",
     arcade: {
-      debug: true
-    }
+      debug: true,
+    },
   },
-  scene: [PreloadScene, PlayScene]
+  scene: [PreloadScene, PlayScene],
 };
 
 new Phaser.Game(config);
