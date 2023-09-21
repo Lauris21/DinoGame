@@ -8,10 +8,14 @@ class PreloadScene extends GameScene {
 
   preload() {
     this.load.image("ground", "assets/ground.png");
-    this.load.image("dino-idle", "assets/dino-idle2.png");
+    this.load.image("dino-idle", "assets/dino-idle-2.png");
 
-    for (let i = 1; i < preloadConfig.cactusesCount; i++) {
-      this.load.image(`obstacle-${i}`, `assets/cactuses_${i}.png`); // Cargamos los cactus
+    for (let i = 0; i < preloadConfig.cactusesCount; i++) {
+      let cactusNum = i + 1;
+      this.load.image(
+        `obstacle-${cactusNum}`,
+        `assets/cactuses_${cactusNum}.png`
+      ); // Cargamos los cactus
     }
 
     // Cargamos la imagen que aparecen 4 dinos en diferentes posturas
