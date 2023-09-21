@@ -20,6 +20,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       .setGravityY(5000)
       .setCollideWorldBounds(true)
       .setBodySize(44, 92);
+
+    this.registerAnimations();
   }
 
   update() {
@@ -36,5 +38,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       // Para que salte debemos cambiar la velocidad y ponerla negativa
       this.setVelocityY(-1600);
     }
+  }
+
+  playRunAnimation() {
+    this.play("dino-run", true); // Ejecutamos la animación
+  }
+
+  registerAnimations() {
+    this.anims.create({
+      key: "dino-run",
+      frames: this.anims.generateFrameNames("dino-run", { start: 2, end: 3 }), // Marcos --> imágenes penúltima y última
+      frameRate: 10, // Fotogramas por segundo
+      repeat: -1, // Infinito
+    });
   }
 }

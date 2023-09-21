@@ -43,6 +43,7 @@ class PlayScene extends Phaser.Scene {
         delay: 1000 / 60,
         loop: true,
         callback: () => {
+          this.player.playRunAnimation(); // LLamamos a la animación
           this.player.setVelocityX(80); // Desplazamos el dino
           this.ground.width += 17 * 2; // Generamos el suelo
           // Cuando el suelo llegue al ancho de la escena
@@ -58,7 +59,7 @@ class PlayScene extends Phaser.Scene {
 
   createPlayer() {
     // Creamos objeto físico porque tendrá gravedad y se le aplicarán colisiones
-    this.player = new Player(this, 0, this.gameHeight, "dino-idle");
+    this.player = new Player(this, 0, this.gameHeight, "dino-run");
   }
   createEnviroment() {
     // 1 punto origen X, 2 punto origen Y, ancho del objeto, 4 alto
