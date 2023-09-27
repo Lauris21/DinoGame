@@ -29,8 +29,13 @@ class PlayScene extends GameScene {
     this.obstacles = this.physics.add.group();
 
     this.physics.add.collider(this.obstacles, this.player, () => {
-      this.physics.pause(); // Cuando chocan los cactus ocn el dino se para el juego
       this.isGameRunning = false;
+      this.physics.pause(); // Cuando chocan los cactus ocn el dino se para el juego
+      this.player.die();
+
+      // Reestablecemos la frecuencia en la que salen los obstáculos
+      this.spawnTime = 0;
+      this.gameSpeed = 5;
     });
     // Cuando chocan elementos
     this.physics.add.overlap(this.startTrigger, this.player, () => {
