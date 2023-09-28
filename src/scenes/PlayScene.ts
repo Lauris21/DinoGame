@@ -8,8 +8,12 @@ class PlayScene extends GameScene {
   startTrigger: SpriteWithDynamicBody; // Disparador del juego
   ground: Phaser.GameObjects.TileSprite; // Suelo
   obstacles: Phaser.Physics.Arcade.Group; // Creamos un grupo para almacenar los cactus
-  gameSpeed: number = 5; // Velocidad del cactus
 
+  gameOverContainer: Phaser.GameObjects.Container;
+  gameOvertext: Phaser.GameObjects.Image;
+  restartText: Phaser.GameObjects.Image;
+
+  gameSpeed: number = 5; // Velocidad del cactus
   spawnInterval: number = 1500; // Intervalo de generación para los obstáculos 1.5 s
   spawnTime: number = 0; // Tiempo de generación
 
@@ -28,10 +32,19 @@ class PlayScene extends GameScene {
 
     this.obstacles = this.physics.add.group();
 
+    this.gameOvertext = this.add.image(0, 0, "game-over");
+    this.restartText = this.add.image(0, 80, "restart");
+
+    this.gameOverContainer = this.add // Colocamos los textos en un contenedor
+      .container(this.gameWidth / 2, this.gameHeight / 2 - 50)
+      .add([this.gameOvertext, this.restartText])
+      .setAlpha(0); // setAlpha(0) --> Hace que no aparezca 
+
     this.physics.add.collider(this.obstacles, this.player, () => {
       this.isGameRunning = false;
       this.physics.pause(); // Cuando chocan los cactus ocn el dino se para el juego
       this.player.die();
+      this.gameOverContainer.setAlpha(1) // setAlpha(1) --> Hace que aparezca 
 
       // Reestablecemos la frecuencia en la que salen los obstáculos
       this.spawnTime = 0;
