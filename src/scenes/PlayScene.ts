@@ -24,62 +24,12 @@ class PlayScene extends GameScene {
   create() {
     this.createEnviroment();
     this.createPlayer();
-    // Creamos elemento invisible en la parte superior
-    this.startTrigger = this.physics.add
-      .sprite(0, 10, null)
-      .setAlpha(0)
-      .setOrigin(0, 1);
+    this.createObstacles();
+    this.createGameOverContainer();
 
-    this.obstacles = this.physics.add.group();
-
-    this.gameOvertext = this.add.image(0, 0, "game-over");
-    this.restartText = this.add.image(0, 80, "restart");
-
-    this.gameOverContainer = this.add // Colocamos los textos en un contenedor
-      .container(this.gameWidth / 2, this.gameHeight / 2 - 50)
-      .add([this.gameOvertext, this.restartText])
-      .setAlpha(0); // setAlpha(0) --> Hace que no aparezca 
-
-    this.physics.add.collider(this.obstacles, this.player, () => {
-      this.isGameRunning = false;
-      this.physics.pause(); // Cuando chocan los cactus ocn el dino se para el juego
-      this.player.die();
-      this.gameOverContainer.setAlpha(1) // setAlpha(1) --> Hace que aparezca 
-
-      // Reestablecemos la frecuencia en la que salen los obstáculos
-      this.spawnTime = 0;
-      this.gameSpeed = 5;
-    });
-    // Cuando chocan elementos
-    this.physics.add.overlap(this.startTrigger, this.player, () => {
-      // Comprobamos que la posición del el.invisible este arriba
-      if (this.startTrigger.y == 10) {
-        // Si esta arriba y chocan bajará al suelo
-        this.startTrigger.body.reset(0, this.gameHeight);
-        return;
-      }
-
-      this.startTrigger.body.reset(9999, 9999); // Movemos el elemento
-
-      // Generamos el suelo
-      const rollOutevent = this.time.addEvent({
-        delay: 1000 / 60,
-        loop: true,
-        callback: () => {
-          this.player.playRunAnimation(); // LLamamos a la animación
-          this.player.setVelocityX(80); // Desplazamos el dino
-          this.ground.width += 17 * 2; // Generamos el suelo
-
-          // Cuando el suelo llegue al ancho de la escena
-          if (this.ground.width >= this.gameWidth) {
-            this.ground.width = this.gameWidth;
-            rollOutevent.remove(); // Detenemos el bucle
-            this.player.setVelocityX(0); // Paramos el dino
-            this.isGameRunning = true; // Empezamos el juego
-          }
-        },
-      });
-    });
+    this.handleGameStart();
+    this.handleObstacleCollison();
+    this.handleGameRestart();
   }
 
   update(time: number, delta: number): void {
@@ -116,6 +66,84 @@ class PlayScene extends GameScene {
     this.ground = this.add
       .tileSprite(0, this.gameHeight, 150, 26, "ground")
       .setOrigin(0, 1);
+  }
+
+  createObstacles() {
+    this.obstacles = this.physics.add.group();
+  }
+
+  createGameOverContainer() {
+    this.gameOvertext = this.add.image(0, 0, "game-over");
+    this.restartText = this.add.image(0, 80, "restart").setInteractive();
+
+    this.gameOverContainer = this.add // Colocamos los textos en un contenedor
+      .container(this.gameWidth / 2, this.gameHeight / 2 - 50)
+      .add([this.gameOvertext, this.restartText])
+      .setAlpha(0); // setAlpha(0) --> Hace que no aparezca
+  }
+
+  handleGameStart() {
+    // Creamos elemento invisible en la parte superior
+    this.startTrigger = this.physics.add
+      .sprite(0, 10, null)
+      .setAlpha(0)
+      .setOrigin(0, 1);
+
+    // Cuando chocan elementos
+    this.physics.add.overlap(this.startTrigger, this.player, () => {
+      // Comprobamos que la posición del el.invisible este arriba
+      if (this.startTrigger.y == 10) {
+        // Si esta arriba y chocan bajará al suelo
+        this.startTrigger.body.reset(0, this.gameHeight);
+        return;
+      }
+
+      this.startTrigger.body.reset(9999, 9999); // Movemos el elemento
+
+      // Generamos el suelo
+      const rollOutevent = this.time.addEvent({
+        delay: 1000 / 60,
+        loop: true,
+        callback: () => {
+          this.player.playRunAnimation(); // LLamamos a la animación
+          this.player.setVelocityX(80); // Desplazamos el dino
+          this.ground.width += 17 * 2; // Generamos el suelo
+
+          // Cuando el suelo llegue al ancho de la escena
+          if (this.ground.width >= this.gameWidth) {
+            this.ground.width = this.gameWidth;
+            rollOutevent.remove(); // Detenemos el bucle
+            this.player.setVelocityX(0); // Paramos el dino
+            this.isGameRunning = true; // Empezamos el juego
+          }
+        },
+      });
+    });
+  }
+
+  handleObstacleCollison() {
+    this.physics.add.collider(this.obstacles, this.player, () => {
+      this.isGameRunning = false;
+      this.physics.pause(); // Cuando chocan los cactus ocn el dino se para el juego
+      this.player.die();
+      this.gameOverContainer.setAlpha(1); // setAlpha(1) --> Hace que aparezca
+
+      // Reestablecemos la frecuencia en la que salen los obstáculos
+      this.spawnTime = 0;
+      this.gameSpeed = 5;
+    });
+  }
+
+  handleGameRestart() {
+    this.restartText.on("pointerdown", () => {
+      this.physics.resume()
+      this.player.setVelocityY(0)
+
+      this.obstacles.clear(true, true)
+      this.gameOverContainer.setAlpha(0)
+      this.anims.resumeAll()
+      this.isGameRunning = true
+    });
   }
 
   spawnObstacle() {
