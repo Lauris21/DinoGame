@@ -136,26 +136,42 @@ class PlayScene extends GameScene {
 
   handleGameRestart() {
     this.restartText.on("pointerdown", () => {
-      this.physics.resume()
-      this.player.setVelocityY(0)
+      this.physics.resume();
+      this.player.setVelocityY(0);
 
-      this.obstacles.clear(true, true)
-      this.gameOverContainer.setAlpha(0)
-      this.anims.resumeAll()
-      this.isGameRunning = true
+      this.obstacles.clear(true, true);
+      this.gameOverContainer.setAlpha(0);
+      this.anims.resumeAll();
+      this.isGameRunning = true;
     });
   }
 
   spawnObstacle() {
-    // Generamos un número random entre 1 y 6 para escoger un cactus de los 6 que hay
+    // Generamos un número random entre 1 y 7 para escoger entre cactus de los 6 que hay o pájaro que hay 1
     const obstacleNum =
-      Math.floor(Math.random() * preloadConfig.cactusesCount) + 1;
+      Math.floor(
+        Math.random() * (preloadConfig.cactusesCount + preloadConfig.birdsCount)
+      ) + 1;
+
     const distance = Phaser.Math.Between(600, 900);
 
-    this.obstacles
-      .create(distance, this.gameHeight, `obstacle-${obstacleNum}`)
-      .setOrigin(0, 1)
-      .setImmovable(); // Evitamos que se desplazcan al ser golpeados
+    if (obstacleNum > preloadConfig.cactusesCount) {
+      // Configuramos altura del pájaro
+      const enemyPossibleHeight = [20, 70];
+      const enemyHeight =
+        enemyPossibleHeight[
+          Math.floor(Math.random() * enemyPossibleHeight.length)
+        ];
+      this.obstacles
+        .create(distance, this.gameHeight - enemyHeight, `enemy-bird`)
+        .setOrigin(0, 1)
+        .setImmovable(); // Evitamos que se desplazcan al ser golpeados
+    } else {
+      this.obstacles
+        .create(distance, this.gameHeight, `obstacle-${obstacleNum}`)
+        .setOrigin(0, 1)
+        .setImmovable(); // Evitamos que se desplazcan al ser golpeados
+    }
   }
 }
 

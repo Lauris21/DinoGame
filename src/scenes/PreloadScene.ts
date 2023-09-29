@@ -32,6 +32,12 @@ class PreloadScene extends GameScene {
       frameWidth: 88,
       frameHeight: 94,
     });
+
+     // Cargamos los enemigos pájaros
+     this.load.spritesheet("enemy-bird", "assets/enemy-bird.png", {
+      frameWidth: 92,
+      frameHeight: 77,
+    });
   }
 
   create() {
