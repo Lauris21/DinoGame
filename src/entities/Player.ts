@@ -52,7 +52,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.setOffset(60, 34);
     }
 
-    // Cambiamos posición cuando soltamos flecha abajo
+    // Reestablecemos posición cuando soltamos flecha abajo
     if (isDownJustUp && onFloor) {
       this.body.setSize(44, 92);
       this.setOffset(20, 0);
@@ -73,7 +73,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   playRunAnimation() {
-    this.play("dino-run", true); // Ejecutamos la animación
+    this.body.height <= 58
+      ? this.play("dino-down", true) // Ejecutamos dino agachado
+      : this.play("dino-run", true); // Ejecutamos dino en movimiento
   }
 
   registerAnimations() {
