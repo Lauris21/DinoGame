@@ -22,16 +22,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setOrigin(0, 1)
       .setGravityY(5000)
       .setCollideWorldBounds(true)
-      .setBodySize(44, 92);
+      .setBodySize(44, 92)
+      .setOffset(20, 0);
 
     this.registerAnimations();
   }
 
   update() {
-    const { space } = this.cursors;
+    const { space, down } = this.cursors;
 
     // Aunque mantengamos el espacio pulsado baja
     const isSpaceJustDown = Phaser.Input.Keyboard.JustDown(space); // Solo es positivo cuando tocas el espacio una vez
+    const isDownJustDown = Phaser.Input.Keyboard.JustDown(down); // Agachamos al dino
+    // Cuando soltamos flecha
+    const isDownJustUp = Phaser.Input.Keyboard.JustUp(down);
 
     // Evitamos que salte en el aire
     const onFloor = (this.body as Phaser.Physics.Arcade.Body).onFloor(); // Devuelve true cuando esta en el suelo
@@ -40,6 +44,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (isSpaceJustDown && onFloor) {
       // Para que salte debemos cambiar la velocidad y ponerla negativa
       this.setVelocityY(-1600);
+    }
+
+    // Cambiamos posición cuando pulsamos flecha abajo
+    if (isDownJustDown && onFloor) {
+      this.body.setSize(this.body.width, 58);
+      this.setOffset(60, 34);
+    }
+
+    // Cambiamos posición cuando soltamos flecha abajo
+    if (isDownJustUp && onFloor) {
+      this.body.setSize(44, 92);
+      this.setOffset(20, 0);
     }
 
     if (!this.scene.isGameRunning) {
@@ -64,6 +80,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.create({
       key: "dino-run",
       frames: this.anims.generateFrameNames("dino-run", { start: 2, end: 3 }), // Marcos --> imágenes penúltima y última
+      frameRate: 10, // Fotogramas por segundo
+      repeat: -1, // Infinito
+    });
+
+    this.anims.create({
+      key: "dino-down",
+      frames: this.anims.generateFrameNames("dino-down"),
       frameRate: 10, // Fotogramas por segundo
       repeat: -1, // Infinito
     });

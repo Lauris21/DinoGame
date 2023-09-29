@@ -26,6 +26,12 @@ class PreloadScene extends GameScene {
       frameWidth: 88,
       frameHeight: 94,
     });
+
+     // Cargamos la imagen que aparecen 2 dinos agachados
+     this.load.spritesheet("dino-down", "assets/dino-down-2.png", {
+      frameWidth: 88,
+      frameHeight: 94,
+    });
   }
 
   create() {
