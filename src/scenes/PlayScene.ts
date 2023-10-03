@@ -26,6 +26,7 @@ class PlayScene extends GameScene {
     this.createPlayer();
     this.createObstacles();
     this.createGameOverContainer();
+    this.createAnimations();
 
     this.handleGameStart();
     this.handleObstacleCollison();
@@ -125,6 +126,7 @@ class PlayScene extends GameScene {
     this.physics.add.collider(this.obstacles, this.player, () => {
       this.isGameRunning = false;
       this.physics.pause(); // Cuando chocan los cactus ocn el dino se para el juego
+      this.anims.pauseAll()
       this.player.die();
       this.gameOverContainer.setAlpha(1); // setAlpha(1) --> Hace que aparezca
 
@@ -146,6 +148,15 @@ class PlayScene extends GameScene {
     });
   }
 
+  createAnimations() {
+    this.anims.create({
+      key: "enemy-bird-fly",
+      frames: this.anims.generateFrameNumbers("enemy-bird"),
+      frameRate: 6,
+      repeat: -1,
+    });
+  }
+
   spawnObstacle() {
     // Generamos un número random entre 1 y 7 para escoger entre cactus de los 6 que hay o pájaro que hay 1
     const obstacleNum =
@@ -153,7 +164,8 @@ class PlayScene extends GameScene {
         Math.random() * (preloadConfig.cactusesCount + preloadConfig.birdsCount)
       ) + 1;
 
-    const distance = Phaser.Math.Between(600, 900);
+    const distance = Phaser.Math.Between(150, 300);
+    let obstacle;
 
     if (obstacleNum > preloadConfig.cactusesCount) {
       // Configuramos altura del pájaro
@@ -162,13 +174,16 @@ class PlayScene extends GameScene {
         enemyPossibleHeight[
           Math.floor(Math.random() * enemyPossibleHeight.length)
         ];
-      this.obstacles
-        .create(distance, this.gameHeight - enemyHeight, `enemy-bird`)
+      
+      obstacle = this.obstacles
+        .create(this.gameWidth + distance, this.gameHeight - enemyHeight, `enemy-bird`)
         .setOrigin(0, 1)
         .setImmovable(); // Evitamos que se desplazcan al ser golpeados
+
+      obstacle.play("enemy-bird-fly", true);
     } else {
-      this.obstacles
-        .create(distance, this.gameHeight, `obstacle-${obstacleNum}`)
+      obstacle = this.obstacles
+        .create(this.gameWidth + distance, this.gameHeight, `obstacle-${obstacleNum}`)
         .setOrigin(0, 1)
         .setImmovable(); // Evitamos que se desplazcan al ser golpeados
     }
