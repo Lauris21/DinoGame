@@ -35,8 +35,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // Aunque mantengamos el espacio pulsado baja
     const isSpaceJustDown = Phaser.Input.Keyboard.JustDown(space); // Solo es positivo cuando tocas el espacio una vez
     const isDownJustDown = Phaser.Input.Keyboard.JustDown(down); // Agachamos al dino
-    // Cuando soltamos flecha
-    const isDownJustUp = Phaser.Input.Keyboard.JustUp(down);
+    const isDownJustUp = Phaser.Input.Keyboard.JustUp(down);  // Cuando soltamos flecha
 
     // Evitamos que salte en el aire
     const onFloor = (this.body as Phaser.Physics.Arcade.Body).onFloor(); // Devuelve true cuando esta en el suelo
