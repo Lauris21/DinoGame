@@ -10,6 +10,7 @@ class PlayScene extends GameScene {
   obstacles: Phaser.Physics.Arcade.Group; // Creamos un grupo para almacenar los cactus
   clouds: Phaser.GameObjects.Group;
 
+  scoreText: Phaser.GameObjects.Text
   gameOverContainer: Phaser.GameObjects.Container;
   gameOvertext: Phaser.GameObjects.Image;
   restartText: Phaser.GameObjects.Image;
@@ -28,6 +29,7 @@ class PlayScene extends GameScene {
     this.createObstacles();
     this.createGameOverContainer();
     this.createAnimations();
+    this.createScore()
 
     this.handleGameStart();
     this.handleObstacleCollison();
@@ -73,7 +75,7 @@ class PlayScene extends GameScene {
     // 1 punto origen X, 2 punto origen Y, ancho del objeto, 4 alto
     // Añadimos el suelo, hasta que el dino cae el ancho serán 150px
     this.ground = this.add
-      .tileSprite(0, this.gameHeight, 150, 26, "ground")
+      .tileSprite(0, this.gameHeight, 88, 26, "ground")
       .setOrigin(0, 1);
 
     this.clouds = this.add.group();
@@ -101,6 +103,26 @@ class PlayScene extends GameScene {
       .setAlpha(0); // setAlpha(0) --> Hace que no aparezca
   }
 
+  createAnimations() {
+    this.anims.create({
+      key: "enemy-bird-fly",
+      frames: this.anims.generateFrameNumbers("enemy-bird"),
+      frameRate: 6,
+      repeat: -1,
+    });
+  }
+
+  createScore() {
+this.scoreText = this.add.text(this.gameWidth, 0, "00000", {
+  fontSize:30,
+  fontFamily: "Arial",
+  color: "#535353",
+  resolution: 5,
+
+}).setOrigin(1, 0).setAlpha(0)
+
+  }
+
   handleGameStart() {
     // Creamos elemento invisible en la parte superior
     this.startTrigger = this.physics.add
@@ -126,7 +148,7 @@ class PlayScene extends GameScene {
         callback: () => {
           this.player.playRunAnimation(); // LLamamos a la animación
           this.player.setVelocityX(80); // Desplazamos el dino
-          this.ground.width += 17 * 2; // Generamos el suelo
+          this.ground.width += (17 * 2); // Generamos el suelo
 
           // Cuando el suelo llegue al ancho de la escena
           if (this.ground.width >= this.gameWidth) {
@@ -134,6 +156,7 @@ class PlayScene extends GameScene {
             rollOutevent.remove(); // Detenemos el bucle
             this.player.setVelocityX(0); // Paramos el dino
             this.clouds.setAlpha(1); // Mostramos las nubes
+            this.scoreText.setAlpha(1) // Mostramos el texto de puntuación
             this.isGameRunning = true; // Empezamos el juego
           }
         },
@@ -164,15 +187,6 @@ class PlayScene extends GameScene {
       this.gameOverContainer.setAlpha(0);
       this.anims.resumeAll();
       this.isGameRunning = true;
-    });
-  }
-
-  createAnimations() {
-    this.anims.create({
-      key: "enemy-bird-fly",
-      frames: this.anims.generateFrameNumbers("enemy-bird"),
-      frameRate: 6,
-      repeat: -1,
     });
   }
 
