@@ -22,7 +22,7 @@ class PlayScene extends GameScene {
   gameSpeed: number = 5; // Velocidad del cactus
   spawnInterval: number = 1500; // Intervalo de generación para los obstáculos 1.5 s
   spawnTime: number = 0; // Tiempo de generación
-  gameSpeedModifier: number = 1 // Actualización de velocidad
+  gameSpeedModifier: number = 2; // Actualización de velocidad
 
   constructor() {
     super("PlayScene");
@@ -49,6 +49,7 @@ class PlayScene extends GameScene {
     this.spawnTime += delta; // Aumentamos tiempo de generación
     this.scoreDeltaTime += delta;
 
+    // Aumentamos puntuación
     if (this.scoreDeltaTime >= this.scoreInterval) {
       this.score++;
       this.scoreDeltaTime = 0;
@@ -58,9 +59,17 @@ class PlayScene extends GameScene {
     if (this.spawnTime >= this.spawnInterval) {
       this.spawnObstacle();
       this.spawnTime = 0;
+
+      if (this.score % 100 === 0) {
+        // Cuando pasemos de 100 aumentamos dificultad
+        this.gameSpeedModifier += 1;
+      }
     }
 
-    Phaser.Actions.IncX(this.obstacles.getChildren(), -this.gameSpeed * this.gameSpeedModifier); // Decrentamos posición X de todos los cactus
+    Phaser.Actions.IncX(
+      this.obstacles.getChildren(),
+      -this.gameSpeed * this.gameSpeedModifier
+    ); // Decrentamos posición X de todos los cactus
     Phaser.Actions.IncX(this.clouds.getChildren(), -0.5); // Cambiamos posición nubes
 
     // Cada vez que el suelo avanza aumentamos puntuación
@@ -85,7 +94,7 @@ class PlayScene extends GameScene {
       }
     });
 
-    this.ground.tilePositionX +=( this.gameSpeed * this.gameSpeedModifier); // Reciclamos suelo y generamos movimiento
+    this.ground.tilePositionX += this.gameSpeed * this.gameSpeedModifier; // Reciclamos suelo y generamos movimiento
   }
 
   createPlayer() {
@@ -199,7 +208,7 @@ class PlayScene extends GameScene {
       this.scoreDeltaTime = 0; // Reiniciamos contador puntuación
       // Reestablecemos la frecuencia en la que salen los obstáculos
       this.spawnTime = 0;
-      this.gameSpeed = 5;
+      this.gameSpeedModifier = 2; // Reiniciamos velocidad
     });
   }
 
