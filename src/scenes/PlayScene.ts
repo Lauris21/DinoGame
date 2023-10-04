@@ -22,6 +22,7 @@ class PlayScene extends GameScene {
   gameSpeed: number = 5; // Velocidad del cactus
   spawnInterval: number = 1500; // Intervalo de generación para los obstáculos 1.5 s
   spawnTime: number = 0; // Tiempo de generación
+  gameSpeedModifier: number = 1 // Actualización de velocidad
 
   constructor() {
     super("PlayScene");
@@ -50,8 +51,6 @@ class PlayScene extends GameScene {
 
     if (this.scoreDeltaTime >= this.scoreInterval) {
       this.score++;
-      console.log(this.score);
-
       this.scoreDeltaTime = 0;
     }
 
@@ -61,7 +60,7 @@ class PlayScene extends GameScene {
       this.spawnTime = 0;
     }
 
-    Phaser.Actions.IncX(this.obstacles.getChildren(), -this.gameSpeed); // Decrentamos posición X de todos los cactus
+    Phaser.Actions.IncX(this.obstacles.getChildren(), -this.gameSpeed * this.gameSpeedModifier); // Decrentamos posición X de todos los cactus
     Phaser.Actions.IncX(this.clouds.getChildren(), -0.5); // Cambiamos posición nubes
 
     // Cada vez que el suelo avanza aumentamos puntuación
@@ -86,7 +85,7 @@ class PlayScene extends GameScene {
       }
     });
 
-    this.ground.tilePositionX += this.gameSpeed; // Reciclamos suelo y generamos movimiento
+    this.ground.tilePositionX +=( this.gameSpeed * this.gameSpeedModifier); // Reciclamos suelo y generamos movimiento
   }
 
   createPlayer() {
