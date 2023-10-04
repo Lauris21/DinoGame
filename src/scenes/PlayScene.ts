@@ -8,6 +8,7 @@ class PlayScene extends GameScene {
   startTrigger: SpriteWithDynamicBody; // Disparador del juego
   ground: Phaser.GameObjects.TileSprite; // Suelo
   obstacles: Phaser.Physics.Arcade.Group; // Creamos un grupo para almacenar los cactus
+  clouds: Phaser.GameObjects.Group;
 
   gameOverContainer: Phaser.GameObjects.Container;
   gameOvertext: Phaser.GameObjects.Image;
@@ -45,11 +46,18 @@ class PlayScene extends GameScene {
       this.spawnTime = 0;
     }
 
-    Phaser.Actions.IncX(this.obstacles.getChildren(), -10, -this.gameSpeed); // Decrentamos posición X de todos los cactus
+    Phaser.Actions.IncX(this.obstacles.getChildren(), -this.gameSpeed); // Decrentamos posición X de todos los cactus
+    Phaser.Actions.IncX(this.clouds.getChildren(), -0.5); // Cambiamos posición nubes
 
     this.obstacles.getChildren().forEach((obstacle: SpriteWithDynamicBody) => {
       if (obstacle.getBounds().right < 0) {
         this.obstacles.remove(obstacle);
+      }
+    });
+
+    this.clouds.getChildren().forEach((cloud: SpriteWithDynamicBody) => {
+      if (cloud.getBounds().right < 0) {
+        cloud.x = this.gameWidth + 30
       }
     });
 
@@ -67,6 +75,16 @@ class PlayScene extends GameScene {
     this.ground = this.add
       .tileSprite(0, this.gameHeight, 150, 26, "ground")
       .setOrigin(0, 1);
+
+    this.clouds = this.add.group();
+    // Creamos las nubes que serán recicladas al salir de la escena
+    this.clouds = this.clouds.addMultiple([
+      this.add.image(this.gameWidth / 2, 170, "cloud"),
+      this.add.image(this.gameWidth - 80, 80, "cloud"),
+      this.add.image(this.gameWidth / 1.3, 100, "cloud"),
+    ]);
+
+    this.clouds.setAlpha(0);
   }
 
   createObstacles() {
@@ -115,6 +133,7 @@ class PlayScene extends GameScene {
             this.ground.width = this.gameWidth;
             rollOutevent.remove(); // Detenemos el bucle
             this.player.setVelocityX(0); // Paramos el dino
+            this.clouds.setAlpha(1); // Mostramos las nubes
             this.isGameRunning = true; // Empezamos el juego
           }
         },
@@ -126,7 +145,7 @@ class PlayScene extends GameScene {
     this.physics.add.collider(this.obstacles, this.player, () => {
       this.isGameRunning = false;
       this.physics.pause(); // Cuando chocan los cactus ocn el dino se para el juego
-      this.anims.pauseAll()
+      this.anims.pauseAll();
       this.player.die();
       this.gameOverContainer.setAlpha(1); // setAlpha(1) --> Hace que aparezca
 
@@ -174,16 +193,24 @@ class PlayScene extends GameScene {
         enemyPossibleHeight[
           Math.floor(Math.random() * enemyPossibleHeight.length)
         ];
-      
+
       obstacle = this.obstacles
-        .create(this.gameWidth + distance, this.gameHeight - enemyHeight, `enemy-bird`)
+        .create(
+          this.gameWidth + distance,
+          this.gameHeight - enemyHeight,
+          `enemy-bird`
+        )
         .setOrigin(0, 1)
         .setImmovable(); // Evitamos que se desplazcan al ser golpeados
 
       obstacle.play("enemy-bird-fly", true);
     } else {
       obstacle = this.obstacles
-        .create(this.gameWidth + distance, this.gameHeight, `obstacle-${obstacleNum}`)
+        .create(
+          this.gameWidth + distance,
+          this.gameHeight,
+          `obstacle-${obstacleNum}`
+        )
         .setOrigin(0, 1)
         .setImmovable(); // Evitamos que se desplazcan al ser golpeados
     }
