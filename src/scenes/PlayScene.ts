@@ -10,10 +10,14 @@ class PlayScene extends GameScene {
   obstacles: Phaser.Physics.Arcade.Group; // Creamos un grupo para almacenar los cactus
   clouds: Phaser.GameObjects.Group;
 
-  scoreText: Phaser.GameObjects.Text
+  scoreText: Phaser.GameObjects.Text;
   gameOverContainer: Phaser.GameObjects.Container;
   gameOvertext: Phaser.GameObjects.Image;
   restartText: Phaser.GameObjects.Image;
+
+  score: number = 0;
+  scoreInterval: number = 100;
+  scoreDeltaTime: number = 0;
 
   gameSpeed: number = 5; // Velocidad del cactus
   spawnInterval: number = 1500; // Intervalo de generación para los obstáculos 1.5 s
@@ -29,7 +33,7 @@ class PlayScene extends GameScene {
     this.createObstacles();
     this.createGameOverContainer();
     this.createAnimations();
-    this.createScore()
+    this.createScore();
 
     this.handleGameStart();
     this.handleObstacleCollison();
@@ -42,6 +46,15 @@ class PlayScene extends GameScene {
     }
     // Delta = tiempo entre fotogramas 16p/s
     this.spawnTime += delta; // Aumentamos tiempo de generación
+    this.scoreDeltaTime += delta;
+
+    if (this.scoreDeltaTime >= this.scoreInterval) {
+      this.score++;
+      console.log(this.score);
+
+      this.scoreDeltaTime = 0;
+    }
+
     // Si el tiempo de genración es mayor que el intervalo generamos el obstáculo
     if (this.spawnTime >= this.spawnInterval) {
       this.spawnObstacle();
@@ -51,6 +64,16 @@ class PlayScene extends GameScene {
     Phaser.Actions.IncX(this.obstacles.getChildren(), -this.gameSpeed); // Decrentamos posición X de todos los cactus
     Phaser.Actions.IncX(this.clouds.getChildren(), -0.5); // Cambiamos posición nubes
 
+    // Cada vez que el suelo avanza aumentamos puntuación
+    const score = Array.from(String(this.score), Number); // Creamos un array a partir de los números --> ejem 10 --> ["1", "0"]
+
+    for (let i = 0; i < 5 - String(this.score).length; i++) {
+      // Le añadimos los 0 que faltan al array de puntuación para que sean 5 dígitos
+      score.unshift(0);
+    }
+
+    this.scoreText.setText(score.join("")); // Unimos el array y obtenemos un string
+
     this.obstacles.getChildren().forEach((obstacle: SpriteWithDynamicBody) => {
       if (obstacle.getBounds().right < 0) {
         this.obstacles.remove(obstacle);
@@ -59,7 +82,7 @@ class PlayScene extends GameScene {
 
     this.clouds.getChildren().forEach((cloud: SpriteWithDynamicBody) => {
       if (cloud.getBounds().right < 0) {
-        cloud.x = this.gameWidth + 30
+        cloud.x = this.gameWidth + 30;
       }
     });
 
@@ -113,14 +136,15 @@ class PlayScene extends GameScene {
   }
 
   createScore() {
-this.scoreText = this.add.text(this.gameWidth, 0, "00000", {
-  fontSize:30,
-  fontFamily: "Arial",
-  color: "#535353",
-  resolution: 5,
-
-}).setOrigin(1, 0).setAlpha(0)
-
+    this.scoreText = this.add
+      .text(this.gameWidth, 0, "00000", {
+        fontSize: 30,
+        fontFamily: "Arial",
+        color: "#535353",
+        resolution: 5,
+      })
+      .setOrigin(1, 0)
+      .setAlpha(0);
   }
 
   handleGameStart() {
@@ -148,7 +172,7 @@ this.scoreText = this.add.text(this.gameWidth, 0, "00000", {
         callback: () => {
           this.player.playRunAnimation(); // LLamamos a la animación
           this.player.setVelocityX(80); // Desplazamos el dino
-          this.ground.width += (17 * 2); // Generamos el suelo
+          this.ground.width += 17 * 2; // Generamos el suelo
 
           // Cuando el suelo llegue al ancho de la escena
           if (this.ground.width >= this.gameWidth) {
@@ -156,7 +180,7 @@ this.scoreText = this.add.text(this.gameWidth, 0, "00000", {
             rollOutevent.remove(); // Detenemos el bucle
             this.player.setVelocityX(0); // Paramos el dino
             this.clouds.setAlpha(1); // Mostramos las nubes
-            this.scoreText.setAlpha(1) // Mostramos el texto de puntuación
+            this.scoreText.setAlpha(1); // Mostramos el texto de puntuación
             this.isGameRunning = true; // Empezamos el juego
           }
         },
@@ -172,6 +196,8 @@ this.scoreText = this.add.text(this.gameWidth, 0, "00000", {
       this.player.die();
       this.gameOverContainer.setAlpha(1); // setAlpha(1) --> Hace que aparezca
 
+      this.score = 0;
+      this.scoreDeltaTime = 0; // Reiniciamos contador puntuación
       // Reestablecemos la frecuencia en la que salen los obstáculos
       this.spawnTime = 0;
       this.gameSpeed = 5;
