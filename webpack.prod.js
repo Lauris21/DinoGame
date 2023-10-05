@@ -10,6 +10,12 @@ module.exports = merge(common, {
     maxEntrypointSize: 90000,
     maxAssetSize: 900000
   },
+  output: {
+    filename: "[name].bundle.js",
+    path: path.resolve(__dirname, "build"),
+    clean: true,
+    assetModuleFilename: "[path][name][ext]",
+  },
   optimization: {
     minimizer: [
       new TerserPlugin({
