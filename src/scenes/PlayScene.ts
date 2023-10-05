@@ -25,6 +25,8 @@ class PlayScene extends GameScene {
   spawnTime: number = 0; // Tiempo de generación
   gameSpeedModifier: number = 1; // Actualización de velocidad
 
+  progressSound: Phaser.Sound.HTML5AudioSound
+
   constructor() {
     super("PlayScene");
   }
@@ -40,6 +42,8 @@ class PlayScene extends GameScene {
     this.handleGameStart();
     this.handleObstacleCollison();
     this.handleGameRestart();
+
+    this.progressSound = this.sound.add("progress", {volume: 0.3}) as Phaser.Sound.HTML5AudioSound
   }
 
   update(time: number, delta: number): void {
@@ -58,6 +62,8 @@ class PlayScene extends GameScene {
       if (this.score % 100 === 0) {
         // Cuando pasemos de 100 aumentamos dificultad
         this.gameSpeedModifier += 1;
+
+        this.progressSound.play()
 
         // Añadimos animación --> hará que la puntuación parpadee 3 veces cuando pase de 100 en 100
         this.tweens.add({
