@@ -1,8 +1,11 @@
 import GameScene from "../scenes/GameScene";
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
+
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   scene: GameScene;
+  jumpSound: Phaser.Sound.HTML5AudioSound
+
   constructor(scene: GameScene, x: number, y: number) {
     super(scene, x, y, "dino-run");
     // Lo registramos como un objeto de juego
@@ -27,6 +30,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       .setDepth(1);
 
     this.registerAnimations();
+
+    this.jumpSound = this.scene.sound.add("jump", {volume: 0.5}) as Phaser.Sound.HTML5AudioSound
   }
 
   update() {
@@ -44,6 +49,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (isSpaceJustDown && onFloor) {
       // Para que salte debemos cambiar la velocidad y ponerla negativa
       this.setVelocityY(-1600);
+      this.jumpSound.play()
     }
 
     // Cambiamos posición cuando pulsamos flecha abajo

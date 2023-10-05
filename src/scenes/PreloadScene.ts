@@ -14,6 +14,10 @@ class PreloadScene extends GameScene {
     this.load.image("game-over", "assets/game-over.png");
     this.load.image("cloud", "assets/cloud.png");
 
+    this.load.audio("jump", "assets/jump.m4a");
+    this.load.audio("hit", "assets/hit.m4a");
+    this.load.audio("progress", "assets/reach.m4a");
+
     for (let i = 0; i < preloadConfig.cactusesCount; i++) {
       let cactusNum = i + 1;
       this.load.image(
@@ -28,14 +32,14 @@ class PreloadScene extends GameScene {
       frameHeight: 94,
     });
 
-     // Cargamos la imagen que aparecen 2 dinos agachados
-     this.load.spritesheet("dino-down", "assets/dino-down-2.png", {
+    // Cargamos la imagen que aparecen 2 dinos agachados
+    this.load.spritesheet("dino-down", "assets/dino-down-2.png", {
       frameWidth: 118,
       frameHeight: 94,
     });
 
-     // Cargamos los enemigos pájaros
-     this.load.spritesheet("enemy-bird", "assets/enemy-bird.png", {
+    // Cargamos los enemigos pájaros
+    this.load.spritesheet("enemy-bird", "assets/enemy-bird.png", {
       frameWidth: 92,
       frameHeight: 77,
     });
