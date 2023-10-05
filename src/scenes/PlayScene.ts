@@ -23,9 +23,9 @@ class PlayScene extends GameScene {
   gameSpeed: number = 5; // Velocidad del cactus
   spawnInterval: number = 1500; // Intervalo de generación para los obstáculos 1.5 s
   spawnTime: number = 0; // Tiempo de generación
-  gameSpeedModifier: number = 1; // Actualización de velocidad
+  gameSpeedModifier: number = 4; // Actualización de velocidad
 
-  progressSound: Phaser.Sound.HTML5AudioSound
+  progressSound: Phaser.Sound.HTML5AudioSound;
 
   constructor() {
     super("PlayScene");
@@ -43,7 +43,9 @@ class PlayScene extends GameScene {
     this.handleObstacleCollison();
     this.handleGameRestart();
 
-    this.progressSound = this.sound.add("progress", {volume: 0.3}) as Phaser.Sound.HTML5AudioSound
+    this.progressSound = this.sound.add("progress", {
+      volume: 0.3,
+    }) as Phaser.Sound.HTML5AudioSound;
   }
 
   update(time: number, delta: number): void {
@@ -61,9 +63,9 @@ class PlayScene extends GameScene {
 
       if (this.score % 100 === 0) {
         // Cuando pasemos de 100 aumentamos dificultad
-        this.gameSpeedModifier += 1;
+        this.gameSpeedModifier += 0.5;
 
-        this.progressSound.play()
+        this.progressSound.play();
 
         // Añadimos animación --> hará que la puntuación parpadee 3 veces cuando pase de 100 en 100
         this.tweens.add({
@@ -71,8 +73,8 @@ class PlayScene extends GameScene {
           duration: 100,
           repeat: 3,
           alpha: 0,
-          yoyo: true
-        })
+          yoyo: true,
+        });
       }
     }
 
@@ -247,7 +249,7 @@ class PlayScene extends GameScene {
       this.scoreDeltaTime = 0; // Reiniciamos contador puntuación
       // Reestablecemos la frecuencia en la que salen los obstáculos
       this.spawnTime = 0;
-      this.gameSpeedModifier = 1; // Reiniciamos velocidad
+      this.gameSpeedModifier = 4; // Reiniciamos velocidad
     });
   }
 
@@ -255,7 +257,7 @@ class PlayScene extends GameScene {
     this.restartText.on("pointerdown", () => {
       this.physics.resume();
       this.player.setVelocityY(0);
-this.highScoreText.setAlpha(0);
+      this.highScoreText.setAlpha(0);
       this.obstacles.clear(true, true);
       this.gameOverContainer.setAlpha(0);
       this.anims.resumeAll();
@@ -264,11 +266,10 @@ this.highScoreText.setAlpha(0);
   }
 
   spawnObstacle() {
+    const obstaculeCount =
+      preloadConfig.cactusesCount + preloadConfig.birdsCount;
     // Generamos un número random entre 1 y 7 para escoger entre cactus de los 6 que hay o pájaro que hay 1
-    const obstacleNum =
-      Math.floor(
-        Math.random() * (preloadConfig.cactusesCount + preloadConfig.birdsCount)
-      ) + 1;
+    const obstacleNum = Math.floor(Math.random() * obstaculeCount) + 1;
 
     const distance = Phaser.Math.Between(150, 300);
     let obstacle;
@@ -292,15 +293,13 @@ this.highScoreText.setAlpha(0);
 
       obstacle.play("enemy-bird-fly", true);
     } else {
-      obstacle = this.obstacles
-        .create(
-          this.gameWidth + distance,
-          this.gameHeight,
-          `obstacle-${obstacleNum}`
-        )
-        .setOrigin(0, 1)
-        .setImmovable(); // Evitamos que se desplazcan al ser golpeados
+      obstacle = this.obstacles.create(
+        this.gameWidth + distance,
+        this.gameHeight,
+        `obstacle-${obstacleNum}`
+      );
     }
+    obstacle.setOrigin(0, 1).setImmovable(); // Evitamos que se desplazcan al ser golpeados
   }
 }
 
