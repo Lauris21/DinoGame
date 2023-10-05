@@ -15,6 +15,7 @@ class PlayScene extends GameScene {
   gameOvertext: Phaser.GameObjects.Image;
   restartText: Phaser.GameObjects.Image;
 
+  highScoreText: Phaser.GameObjects.Text;
   score: number = 0;
   scoreInterval: number = 100;
   scoreDeltaTime: number = 0;
@@ -22,7 +23,7 @@ class PlayScene extends GameScene {
   gameSpeed: number = 5; // Velocidad del cactus
   spawnInterval: number = 1500; // Intervalo de generación para los obstáculos 1.5 s
   spawnTime: number = 0; // Tiempo de generación
-  gameSpeedModifier: number = 2; // Actualización de velocidad
+  gameSpeedModifier: number = 1; // Actualización de velocidad
 
   constructor() {
     super("PlayScene");
@@ -59,11 +60,11 @@ class PlayScene extends GameScene {
     if (this.spawnTime >= this.spawnInterval) {
       this.spawnObstacle();
       this.spawnTime = 0;
+    }
 
-      if (this.score % 100 === 0) {
-        // Cuando pasemos de 100 aumentamos dificultad
-        this.gameSpeedModifier += 1;
-      }
+    if (this.score % 100 === 0) {
+      // Cuando pasemos de 100 aumentamos dificultad
+      this.gameSpeedModifier += 1;
     }
 
     Phaser.Actions.IncX(
@@ -153,6 +154,16 @@ class PlayScene extends GameScene {
       })
       .setOrigin(1, 0)
       .setAlpha(0);
+
+    this.highScoreText = this.add
+      .text(this.scoreText.getBounds().left - 20, 0, "00000", {
+        fontSize: 30,
+        fontFamily: "Arial",
+        color: "#535353",
+        resolution: 5,
+      })
+      .setOrigin(1, 0)
+      .setAlpha(0);
   }
 
   handleGameStart() {
@@ -204,11 +215,24 @@ class PlayScene extends GameScene {
       this.player.die();
       this.gameOverContainer.setAlpha(1); // setAlpha(1) --> Hace que aparezca
 
+      // "Hi 00032".substring(3) --> "00032" nos quedamos con los números
+      const newHighScore = this.highScoreText.text.substring(
+        this.highScoreText.text.length - 5
+      );
+
+      const newScore =
+        Number(this.scoreText.text) > Number(newHighScore)
+          ? this.scoreText.text
+          : newHighScore;
+
+      this.highScoreText.setText(`Hi ${newScore}`);
+      this.highScoreText.setAlpha(1);
+
       this.score = 0;
       this.scoreDeltaTime = 0; // Reiniciamos contador puntuación
       // Reestablecemos la frecuencia en la que salen los obstáculos
       this.spawnTime = 0;
-      this.gameSpeedModifier = 2; // Reiniciamos velocidad
+      this.gameSpeedModifier = 1; // Reiniciamos velocidad
     });
   }
 
@@ -216,7 +240,7 @@ class PlayScene extends GameScene {
     this.restartText.on("pointerdown", () => {
       this.physics.resume();
       this.player.setVelocityY(0);
-
+this.highScoreText.setAlpha(0);
       this.obstacles.clear(true, true);
       this.gameOverContainer.setAlpha(0);
       this.anims.resumeAll();
