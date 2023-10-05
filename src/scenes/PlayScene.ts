@@ -54,17 +54,26 @@ class PlayScene extends GameScene {
     if (this.scoreDeltaTime >= this.scoreInterval) {
       this.score++;
       this.scoreDeltaTime = 0;
+
+      if (this.score % 100 === 0) {
+        // Cuando pasemos de 100 aumentamos dificultad
+        this.gameSpeedModifier += 1;
+
+        // Añadimos animación --> hará que la puntuación parpadee 3 veces cuando pase de 100 en 100
+        this.tweens.add({
+          targets: this.scoreText,
+          duration: 100,
+          repeat: 3,
+          alpha: 0,
+          yoyo: true
+        })
+      }
     }
 
     // Si el tiempo de genración es mayor que el intervalo generamos el obstáculo
     if (this.spawnTime >= this.spawnInterval) {
       this.spawnObstacle();
       this.spawnTime = 0;
-    }
-
-    if (this.score % 100 === 0) {
-      // Cuando pasemos de 100 aumentamos dificultad
-      this.gameSpeedModifier += 1;
     }
 
     Phaser.Actions.IncX(
